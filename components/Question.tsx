@@ -7,7 +7,8 @@ const Question = () => {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState(null)
   const [loading, setLoading] = useState(false)
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
@@ -17,6 +18,7 @@ const Question = () => {
     setLoading(false)
     setQuestion('')
   }
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
