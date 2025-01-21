@@ -51,18 +51,24 @@ interface EntryUpdates {
   content?: string;
 }
 
-export const updateEntry = async (id: string, updates: EntryUpdates) => {
+export const updateEntry = async (id: string, { content }: { content: string }) => {
   const res = await fetch(
     new Request(createURL(`/api/entry/${id}`), {
       method: 'PATCH',
-      body: JSON.stringify(updates),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
     })
   )
 
   if (res.ok) {
-    return res.json()
+    const data = await res.json()
+    console.log('Entry updated successfully:', data)
+    return data
   } else {
     const error = await res.json().catch(() => ({ error: 'Failed to update entry' }))
+    console.error('Failed to update entry:', error)
     throw new Error(error.error || 'Failed to update entry')
   }
 }

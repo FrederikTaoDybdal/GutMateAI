@@ -8,53 +8,86 @@ export const DELETE = async (
   request: Request,
   { params }: { params: { id: string } }
 ) => {
-  const user = await getUserFromClerkID()
+  try {
+    const user = await getUserFromClerkID()
 
-  await prisma.journalEntry.delete({
-    where: {
-      userId_id: {
-        id: params.id,
-        userId: user.id,
+    await prisma.journalEntry.delete({
+      where: {
+        userId_id: {
+          id: params.id,
+          userId: user.id,
+        },
       },
-    },
-  })
+    })
 
-  update(['/journal'])
-
-  return NextResponse.json({ data: { id: params.id } })
+    update(['/journal'])
+    return NextResponse.json({ data: { id: params.id } })
+  } catch (error) {
+    console.error('DELETE Error:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete entry' },
+      { status: 500 }
+    )
+  }
 }
 
 export const PATCH = async (
   request: Request,
   { params }: { params: { id: string } }
 ) => {
-  const { updates } = await request.json()
-  const user = await getUserFromClerkID()
+  try {
+    const { content } = await request.json()
+    console.log('Received content:', content)
+    
+    const user = await getUserFromClerkID()
 
-  const entry = await prisma.journalEntry.update({
-    where: {
-      userId_id: {
-        id: params.id,
-        userId: user.id,
+    const entry = await prisma.journalEntry.update({
+      where: {
+        userId_id: {
+          id: params.id,
+          userId: user.id,
+        },
       },
-    },
-    data: updates,
-  })
+      data: {
+        content: content,
+      },
+      include: {
+        analysis: true,
+      },
+    })
 
-  const analysis = await analyzeEntry(entry)
-  const savedAnalysis = await prisma.entryAnalysis.upsert({
-    where: {
-      entryId: entry.id,
-    },
-    update: { ...analysis },
-    create: {
-      entryId: entry.id,
-      userId: user.id,
-      ...analysis,
-    },
-  })
+    if (!content || content.trim() === '') {
+      return NextResponse.json({ data: entry })
+    }
 
-  update(['/journal'])
+    try {
+      const analysis = await analyzeEntry(entry)
+      console.log('Analysis result:', analysis)
+      
+      const savedAnalysis = await prisma.entryAnalysis.upsert({
+        where: {
+          entryId: entry.id,
+        },
+        update: { ...analysis },
+        create: {
+          entryId: entry.id,
+          userId: user.id,
+          ...analysis,
+        },
+      })
 
-  return NextResponse.json({ data: { ...entry, analysis: savedAnalysis } })
+      update(['/journal'])
+      return NextResponse.json({ data: { ...entry, analysis: savedAnalysis } })
+    } catch (analysisError) {
+      console.error('Analysis Error:', analysisError)
+      // Return the entry even if analysis fails
+      return NextResponse.json({ data: entry })
+    }
+  } catch (error) {
+    console.error('PATCH Error:', error)
+    return NextResponse.json(
+      { error: 'Failed to update entry' },
+      { status: 500 }
+    )
+  }
 }
