@@ -54,10 +54,10 @@ const getPrompt = async (content: string) => {
 }
 
 interface JournalEntry {
-  id: string;
+  id?: string;
   createdAt: Date;
   content: string;
-  userId: string;
+  userId?: string;
 }
 
 const analyzeEntry = async (entry: JournalEntry) => {

@@ -11,8 +11,10 @@ export const POST = async (request: Request) => {
       userId: user.id,
     },
     select: {
+      id: true,
       content: true,
       createdAt: true,
+      userId: true,
     },
   })
 
