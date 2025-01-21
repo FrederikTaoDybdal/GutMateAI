@@ -1,8 +1,13 @@
 'use client'
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts'
+import type { ChartData, TooltipProps } from '@/types/journal'
 
-const CustomTooltip = ({ payload, label, active }) => {
-  const dateLabel = new Date(label).toLocaleString('en-us', {
+const CustomTooltip = ({ payload, label, active }: TooltipProps) => {
+  if (!active || !payload || payload.length === 0) {
+    return null
+  }
+
+  const dateLabel = new Date(label as string).toLocaleString('en-us', {
     weekday: 'long',
     year: 'numeric',
     month: 'short',
@@ -11,24 +16,25 @@ const CustomTooltip = ({ payload, label, active }) => {
     minute: 'numeric',
   })
 
-  if (active) {
-    const analysis = payload[0].payload
-    return (
-      <div className="p-8 custom-tooltip bg-white/5 shadow-md border border-black/10 rounded-lg backdrop-blur-md relative">
-        <div
-          className="absolute left-2 top-2 w-2 h-2 rounded-full"
-          style={{ background: analysis.color }}
-        ></div>
-        <p className="label text-sm text-black/30">{dateLabel}</p>
-        <p className="intro text-xl uppercase">{analysis.mood}</p>
-      </div>
-    )
-  }
+  const analysis = payload[0].payload
 
-  return null
+  return (
+    <div className="p-8 custom-tooltip bg-white/5 shadow-md border border-black/10 rounded-lg backdrop-blur-md relative">
+      <div
+        className="absolute left-2 top-2 w-2 h-2 rounded-full"
+        style={{ background: analysis.color }}
+      ></div>
+      <p className="label text-sm text-black/30">{dateLabel}</p>
+      <p className="intro text-xl uppercase">{analysis.mood}</p>
+    </div>
+  )
 }
 
-const HistoryChart = ({ data }) => {
+interface HistoryChartProps {
+  data: ChartData[]
+}
+
+const HistoryChart = ({ data }: HistoryChartProps) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart width={300} height={100} data={data}>

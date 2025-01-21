@@ -8,6 +8,7 @@ export interface Analysis {
   color: string;
   negative: boolean;
   subject: string;
+  sentimentScore?: number;
 }
 
 export interface JournalEntry {
@@ -17,4 +18,20 @@ export interface JournalEntry {
   content: string;
   userId: string;
   analysis?: Analysis | null;
+}
+
+export interface ChartData {
+  id: string;
+  createdAt: Date;
+  color: string;
+  mood: string;
+  sentimentScore: number;
+}
+
+export interface TooltipProps {
+  payload?: Array<{
+    payload: ChartData;
+  }>;
+  label?: string;
+  active?: boolean;
 }

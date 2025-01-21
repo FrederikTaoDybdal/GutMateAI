@@ -4,10 +4,15 @@ import { useState } from 'react'
 import { useAutosave } from 'react-autosave'
 import Spinner from './Spinner'
 import { useRouter } from 'next/navigation'
+import type { JournalEntry } from '@/types/journal'
 
-const Editor = ({ entry }) => {
+interface EditorProps {
+  entry: JournalEntry
+}
+
+const Editor = ({ entry }: EditorProps) => {
   const [text, setText] = useState(entry.content)
-  const [currentEntry, setEntry] = useState(entry)
+  const [currentEntry, setEntry] = useState<JournalEntry>(entry)
   const [isSaving, setIsSaving] = useState(false)
   const router = useRouter()
 
