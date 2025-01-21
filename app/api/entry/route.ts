@@ -4,31 +4,44 @@ import { prisma } from '@/util/db'
 import { NextResponse } from 'next/server'
 
 export const POST = async (request: Request) => {
-  const data = await request.json()
-  const user = await getUserFromClerkID()
-  const entry = await prisma.journalEntry.create({
-    data: {
-      content: data.content,
-      user: {
-        connect: {
-          id: user.id,
+  try {
+    const data = await request.json()
+    console.log('Received data:', data)
+    
+    const user = await getUserFromClerkID()
+    console.log('User:', user)
+    
+    const entry = await prisma.journalEntry.create({
+      data: {
+        userId: user.id,
+        content: data.content || '',
+        status: 'DRAFT',
+        analysis: {
+          create: {
+            mood: 'Neutral',
+            subject: 'None',
+            negative: false,
+            summary: 'None',
+            sentimentScore: 0,
+            color: '#0101fe',
+            userId: user.id,
+          },
         },
       },
-      analysis: {
-        create: {
-          mood: 'Neutral',
-          subject: 'None',
-          negative: false,
-          summary: 'None',
-          sentimentScore: 0,
-          color: '#0101fe',
-          userId: user.id,
-        },
+      include: {
+        analysis: true,
       },
-    },
-  })
+    })
+    console.log('Created entry:', entry)
 
-  update(['/journal'])
+    update(['/journal'])
 
-  return NextResponse.json({ data: entry })
+    return NextResponse.json({ data: entry })
+  } catch (error) {
+    console.error('POST Error:', error)
+    return NextResponse.json(
+      { error: 'Failed to create entry' },
+      { status: 500 }
+    )
+  }
 }
