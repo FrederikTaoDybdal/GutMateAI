@@ -1,6 +1,13 @@
-const Spinner = () => {
+import { HTMLAttributes } from 'react'
+
+interface SpinnerProps extends HTMLAttributes<HTMLDivElement> {}
+
+const Spinner = ({ className = "", ...props }: SpinnerProps) => {
   return (
-    <div className="w-[16px] h-[16px] rounded-full animate-spin border border-solid border-yellow-500 border-t-transparent"></div>
+    <div 
+      className={`w-4 h-4 rounded-full animate-spin border-2 border-solid border-brand-primary border-t-transparent ${className}`}
+      {...props}
+    />
   )
 }
 
