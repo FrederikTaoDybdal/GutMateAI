@@ -36,12 +36,12 @@ const parser = StructuredOutputParser.fromZodSchema(
   })
 )
 
-const getPrompt = async (content) => {
+const getPrompt = async (content: string) => {
   const format_instructions = parser.getFormatInstructions()
 
   const prompt = new PromptTemplate({
     template:
-      'Analyze the following journal entry. Follow the intrusctions and format your response to match the format instructions, no matter what! \n{format_instructions}\n{entry}',
+      'Analyze the following journal entry. Follow the instructions and format your response to match the format instructions, no matter what! \n{format_instructions}\n{entry}',
     inputVariables: ['entry'],
     partialVariables: { format_instructions },
   })
@@ -53,7 +53,14 @@ const getPrompt = async (content) => {
   return input
 }
 
-export const analyzeEntry = async (entry) => {
+interface JournalEntry {
+  id: string;
+  createdAt: Date;
+  content: string;
+  userId: string;
+}
+
+const analyzeEntry = async (entry: JournalEntry) => {
   const input = await getPrompt(entry.content)
   const model = new OpenAI({ temperature: 0, modelName: 'gpt-3.5-turbo' })
   const output = await model.call(input)
@@ -70,12 +77,12 @@ export const analyzeEntry = async (entry) => {
   }
 }
 
-export const qa = async (question, entries) => {
+const qa = async (question: string, entries: JournalEntry[]) => {
   const docs = entries.map(
     (entry) =>
       new Document({
         pageContent: entry.content,
-        metadata: { source: entry.id, date: entry.createdAt },
+        metadata: { id: entry.id, createdAt: entry.createdAt },
       })
   )
   const model = new OpenAI({ temperature: 0, modelName: 'gpt-3.5-turbo' })
@@ -90,3 +97,5 @@ export const qa = async (question, entries) => {
 
   return res.output_text
 }
+
+export { qa, analyzeEntry }

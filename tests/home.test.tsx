@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import Page from '../app/page'
+import type { ReactNode } from 'react'
 
 vi.mock('@clerk/nextjs', () => {
   // Create an mockedFunctions object to match the functions we are importing from the @nextjs/clerk package in the ClerkComponent component.
@@ -9,7 +10,7 @@ vi.mock('@clerk/nextjs', () => {
       new Promise((resolve) =>
         resolve({ userId: 'user_2NNEqL2nrIRdJ194ndJqAHwEfxC' })
       ),
-    ClerkProvider: ({ children }) => <div>{children}</div>,
+    ClerkProvider: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     useUser: () => ({
       isSignedIn: true,
       user: {
