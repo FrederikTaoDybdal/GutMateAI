@@ -1,12 +1,13 @@
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
+import { ReactNode } from 'react'
 
 const links = [
   { name: 'Journals', href: '/journal' },
   { name: 'History', href: '/history' },
 ]
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="w-screen h-screen relative">
       <aside className="absolute left-0 top-0 h-full w-[200px] border-r border-black/10">
