@@ -20,6 +20,7 @@ const Editor = ({ entry }: EditorProps) => {
     await deleteEntry(entry.id)
     router.push('/journal')
   }
+
   useAutosave({
     data: text,
     onSave: async (_text) => {
@@ -51,7 +52,7 @@ const Editor = ({ entry }: EditorProps) => {
       </div>
       <div className="border-l border-black/5">
         <div
-          style={{ background: currentEntry.analysis.color }}
+          style={{ background: currentEntry.analysis?.color || '#ffffff' }}
           className="h-[100px] bg-blue-600 text-white p-8"
         >
           <h2 className="text-2xl bg-white/25 text-black">Analysis</h2>
@@ -60,18 +61,18 @@ const Editor = ({ entry }: EditorProps) => {
           <ul role="list" className="divide-y divide-gray-200">
             <li className="py-4 px-8 flex items-center justify-between">
               <div className="text-xl font-semibold w-1/3">Subject</div>
-              <div className="text-xl">{currentEntry.analysis.subject}</div>
+              <div className="text-xl">{currentEntry.analysis?.subject || 'N/A'}</div>
             </li>
 
             <li className="py-4 px-8 flex items-center justify-between">
               <div className="text-xl font-semibold">IBS</div>
-              <div className="text-xl">{currentEntry.analysis.mood}</div>
+              <div className="text-xl">{currentEntry.analysis?.mood || 'N/A'}</div>
             </li>
 
             <li className="py-4 px-8 flex items-center justify-between">
               <div className="text-xl font-semibold">Negative</div>
               <div className="text-xl">
-                {currentEntry.analysis.negative ? 'True' : 'False'}
+                {currentEntry.analysis?.negative !== undefined ? (currentEntry.analysis.negative ? 'True' : 'False') : 'N/A'}
               </div>
             </li>
             <li className="py-4 px-8 flex items-center justify-between">

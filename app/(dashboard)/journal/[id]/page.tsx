@@ -2,6 +2,7 @@ import Editor from '@/components/Editor'
 import { getUserFromClerkID } from '@/util/auth'
 import { prisma } from '@/util/db'
 import type { JournalEntry } from '@/types/journal'
+import { notFound } from 'next/navigation'
 
 const getEntry = async (id: string): Promise<JournalEntry | null> => {
   const user = await getUserFromClerkID()
@@ -22,6 +23,10 @@ const getEntry = async (id: string): Promise<JournalEntry | null> => {
 
 const JournalEditorPage = async ({ params }: { params: { id: string } }) => {
   const entry = await getEntry(params.id)
+
+  if (!entry) {
+    notFound()
+  }
 
   return (
     <div className="w-full h-full">
